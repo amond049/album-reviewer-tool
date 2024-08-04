@@ -1,7 +1,7 @@
-import os
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
-import json
+import sys
+
 
 scope = "user-read-recently-played"
 
@@ -26,22 +26,32 @@ else:
     n_last_results = sp.current_user_recently_played(limit=check_n_last_tracks)
     album_tracks = sp.album_tracks(album_id)
 
-    for track in range(check_n_last_tracks):
-        print(album_tracks['items'][track]['name'])
+    album_track_titles = []
+    recently_listened_track_titles = []
 
-    # Need to check if each track in the most recently listened to tracks are in the album, but need to account for duplicates!
-    # Could delete each track fromm the album list as we check them
-    for listened_track in range(check_n_last_tracks):
-        print(n_last_results['items'][listened_track]['track']['name'])
+    n_last_results_to_remove = []
+    album_tracks_to_remove = []
 
-    # Once it's been confirmed, if I have to review it, prompt me to enter some values (should be pretty easy, just look up some Bash
-    # commands.
+    for item in n_last_results['items']:
+        recently_listened_track_titles.append(item['track']['name'])
+        n_last_results_to_remove.append(item['track']['name'])
+
+    for track in album_tracks['items']:
+        album_track_titles.append(track['name'])
+        album_tracks_to_remove.append(track['name'])
+
+    for listened_track in recently_listened_track_titles:
+        if listened_track in album_track_titles:
+            n_last_results_to_remove.remove(listened_track)
+            album_tracks_to_remove.remove(listened_track)
 
 
-''' TODO:
-- Get the most recent track 
-- If the track is part of an album, get the rest of the tracks from the album
-- get the length of the album and check to see if the n (where n is the length of the album) most recent tracks are tracks from the album
-- If so, prompt the user for review 
-- If not, continue analyzing
-'''
+    if len(n_last_results_to_remove) == 0 and len(album_tracks_to_remove) == 0:
+        print("Did listen to an entire album")
+        sys.stdout.write('true')
+    else:
+        tracks_listened_to = len(album_tracks['items']) - len(album_tracks_to_remove)
+        print("Did not listen to an entire album. Only listened to " + str(tracks_listened_to) + " out of " + str(len(album_track_titles)) + " tracks")
+        sys.stdout.write('false')
+
+    sys.exit(0)
