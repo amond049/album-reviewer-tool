@@ -1,1 +1,4 @@
 This is just a quick utility tool that I created to help make the process of reviewing any albums easier. Instead of having to navigate to a page to fill out a form with my thoughts, or even worse, manually create a row in the DynamoDB table hosting the data, this tool alongside the Task Scheduler in Windows will automatically check the most recent listened songs in my playlist and then determine if I've listened to all of the songs from any album. If I have, a Python window will open prompting me to enter the name of the album, the artis(s), my thoughts and my rating of the album. If I haven't been listening to music, or I'm just listening to random songs, I will not be prompted anything and can continue to listen without worry. 
+
+
+On second thought, the ideal way to do this would be to set up a cron job. I will get around to doing this later because it doesn't seem as though Windows Task Schedular wants to work with me
